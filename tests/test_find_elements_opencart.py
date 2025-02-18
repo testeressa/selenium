@@ -1,10 +1,11 @@
 from selenium.webdriver.common.by import By
 
-from pages.MainPage import PageMain
-from pages.ItemPage import PageItem
-from pages.CatalogPage import PageCatalog
-from pages.AdminPage import PageAdmin
-from pages.RegistrationPage import PageRegistration
+from pages.main_page import PageMain
+from pages.product_page import PageProduct
+from pages.catalog_page import PageCatalog
+from pages.admin_page import PageAdmin
+from pages.registration_page import PageRegistration
+from pages.header_element import Header
 
 
 def test_main_page(browser):
@@ -12,7 +13,7 @@ def test_main_page(browser):
     browser.find_element(*PageMain.LOGO_BUTTON)
     browser.find_element(*PageMain.SEARCH)
     browser.find_element(By.CSS_SELECTOR, "#header-cart > div")
-    browser.find_element(*PageMain.CURRENCY_DROPDOWN)
+    browser.find_element(*Header.CURRENCY_DROPDOWN)
     browser.find_element(By.CSS_SELECTOR, "#header-cart")
 
 
@@ -25,13 +26,13 @@ def test_catalog_page(browser):
     browser.find_element(By.XPATH, "//a[contains(@href,'catalog/desktops/mac')]")
 
 
-def test_item_page(browser):
+def test_product_page(browser):
     browser.get(browser.url + "/product/desktops/apple-cinema")
-    browser.find_element(*PageItem.ADD_TO_CARD_BUTTON)
-    browser.find_element(*PageItem.OLD_PRICE)
+    browser.find_element(*PageProduct.ADD_TO_CARD_BUTTON)
+    browser.find_element(*PageProduct.OLD_PRICE)
     browser.find_element(By.CSS_SELECTOR, "#input-option-value-5")
-    browser.find_element(*PageItem.SELECT_COLOR)
-    browser.find_element(By.XPATH, "//a[contains(@href,'apple?route=product/manufacturer.info')]").click()
+    browser.find_element(*PageProduct.SELECT_COLOR)
+    browser.find_element(By.XPATH, "//a[contains(@href,'apple?route=product/manufacturer.info')]")
 
 
 def test_login_page(browser):

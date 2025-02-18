@@ -1,9 +1,11 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+
+from pages.base_page import BasePage
 
 
-class PageAdmin:
+class PageAdmin(BasePage):
 
     USERNAME = 'user'
     PASSWORD = 'bitnami'
@@ -11,12 +13,6 @@ class PageAdmin:
     INPUT_PASSWORD = (By.NAME, "password")
     SUBMIT_BUTTON = (By.CSS_SELECTOR, "[type = 'submit']")
     LOGOUT_BUTTON = (By.CSS_SELECTOR, "#nav-logout")
-
-    def __init__(self, browser):
-        self.browser = browser
-
-    def open(self, url):
-        self.browser.get(url)
 
     def input_username(self):
         self.browser.find_element(*self.INPUT_USERNAME).clear()
@@ -37,5 +33,6 @@ class PageAdmin:
         self.input_password()
         self.submit_login()
 
-
+    def wait_for_title(self, timeout=2, title_text="Dashboard"):
+        WebDriverWait(self.browser, timeout).until(EC.title_contains(title_text))
 
