@@ -2,6 +2,7 @@ from pages.admin_page import PageAdmin
 from pages.catalog_page import PageCatalog
 from pages.main_page import PageMain
 from pages.header_element import Header
+from pages.registration_page import PageRegistration
 from pages.shopping_cart_page import PageShoppingCart
 
 
@@ -58,3 +59,37 @@ def test_currency_change_catalog(browser):
     assert initial_currency != updated_currency, f'Изменение валюты не применилось'
 
 
+def test_add_new_product(browser):
+    page_admin = PageAdmin(browser)
+    page_admin.open(browser.url + "/administration")
+    page_admin.login_admin_page()
+    page_admin.navigate_to_products()
+    page_admin.add_new_product(
+        "Test Product", "Test Meta Tag", "Test Model", "test-keyword"
+    )
+    assert page_admin.is_success_message_displayed(), f"Товар не был добавлен"
+
+
+def test_delete_product(browser):
+    page_admin = PageAdmin(browser)
+    page_admin.open(browser.url + "/administration")
+    page_admin.login_admin_page()
+    page_admin.navigate_to_products()
+    page_admin.delete_product()
+    assert page_admin.is_success_message_displayed(), "Товар не был удален"
+
+
+def test_register_new_user(browser):
+    page_reg = PageRegistration(browser)
+    page_reg.open(browser.url)
+    page_reg.navigate_to_register()
+    page_reg.register_user("Test", "User", "test.user@ehxample.com", "password")
+    assert page_reg.is_registration_successful(), "Регистрация не удалась"
+
+
+def test_switch_currency(browser):
+    header = Header(browser)
+    header.open(browser.url)
+    header.switch_currency()
+    page_main = PageMain(browser)
+    assert "€" in page_main.get_current_currency()[-1], "Валюта не была изменена"

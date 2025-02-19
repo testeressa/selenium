@@ -47,7 +47,7 @@ def test_login_page(browser):
 def test_registration_page(browser):
     browser.get(browser.url + "/en-gb?route=account/register")
     browser.find_element(*PageRegistration.FIRSTNAME)
-    browser.find_element(*PageRegistration.INPUT_PASSWORD)
+    browser.find_element(*PageRegistration.PASSWORD)
     browser.find_element(*PageRegistration.SUBSCRIBE_TOGGLE)
     browser.find_element(*PageRegistration.CONTINUE_BUTTON)
     browser.find_element(By.CSS_SELECTOR, ".modal-link")
