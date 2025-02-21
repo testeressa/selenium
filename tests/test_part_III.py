@@ -1,73 +1,95 @@
-import random
-import time
+from pages.admin_page import PageAdmin
+from pages.catalog_page import PageCatalog
+from pages.main_page import PageMain
+from pages.header_element import Header
+from pages.registration_page import PageRegistration
+from pages.shopping_cart_page import PageShoppingCart
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
 
+def test_login_succeed_and_logout(browser, ):
+    page_admin = PageAdmin(browser)
+    page_admin.open(browser.url + "/administration")
+    page_admin.login_admin_page()
 
-def test_login_succeed_and_logout(login, browser):
-    assert "Dashboard" in login.title, "Пользователь не залогинен"
-    logout_button = browser.find_element(By.CSS_SELECTOR, "#nav-logout")
-    logout_button.click()
+    page_admin.wait_for_title()
+
+    assert "Dashboard" in browser.title, "Пользователь не залогинен"
+
+    page_admin.logout()
+    page_admin.wait_for_title(title_text="Administration")
+
+    assert "Administration" in browser.title, "Пользователь не разлогинен"
 
 
 def test_add_item(browser):
-    browser.get(browser.url + "/home")
-    product = EC.visibility_of_element_located((By.CSS_SELECTOR, ".fa-shopping-cart"))
-    wait = WebDriverWait(browser, 10)
-    ActionChains(browser).move_to_element(wait.until(product)).click().perform()
+    page_shopping_cart = PageShoppingCart(browser)
+    page_shopping_cart.open(browser.url + "/home")
 
-    browser.get(browser.url + '/en-gb?route=checkout/cart')
-    shopping_cart = browser.find_elements(By.CSS_SELECTOR, "#shopping-cart")
+    page_shopping_cart.add_item_to_cart()
+
+    page_shopping_cart.open(browser.url + '/en-gb?route=checkout/cart')
+    shopping_cart = page_shopping_cart.get_shopping_cart_items()
 
     assert len(shopping_cart) == 1, f'Товар не был добавлен в корзину'
 
 
-def test_currency_change_main_page(browser, get_current_currency):
-    browser.get(browser.url + "/home")
-    initial_currency = get_current_currency
-    currency_dropdown = browser.find_element(By.CSS_SELECTOR, "#form-currency")
-    currency_dropdown.click()
+def test_currency_change_main_page(browser):
+    page_main = PageMain(browser)
+    page_main.open(browser.url + "/home")
+    initial_currency = page_main.get_current_currency()
 
-    time.sleep(1)
+    header = Header(browser)
+    header.open_currency_dropdown()
+    header.select_currency(0)
+    updated_currency = page_main.get_current_currency()
 
-    currencies = browser.find_elements(By.CSS_SELECTOR, ".dropdown-menu.show .dropdown-item")
-    if currencies:
-        currencies[0].click()
-    else:
-        raise AssertionError("Список валют пуст")
-
-    time.sleep(1)
-
-    updated_currency = [product.find_element(By.CSS_SELECTOR, ".price-new").text
-                        for product in browser.find_elements(By.CSS_SELECTOR, ".product-thumb")]
-
-    time.sleep(1)
-
-    assert initial_currency != updated_currency[0], f'Изменение валюты не применилось'
+    assert initial_currency != updated_currency, f'Изменение валюты не применилось'
 
 
-def test_currency_change_catalog(browser,get_current_currency):
-    browser.get(browser.url + "/catalog/desktops")
-    initial_currency = get_current_currency
-    currency_dropdown = browser.find_element(By.CSS_SELECTOR, "#form-currency")
-    currency_dropdown.click()
+def test_currency_change_catalog(browser):
+    page_catalog = PageCatalog(browser)
+    page_catalog.open(browser.url + "/catalog/desktops")
+    initial_currency = page_catalog.get_current_currency()
 
-    time.sleep(1)
+    header = Header(browser)
+    header.open_currency_dropdown()
+    header.select_currency()
+    updated_currency = page_catalog.get_current_currency()
 
-    currencies = browser.find_elements(By.CSS_SELECTOR, ".dropdown-menu.show .dropdown-item")
-    if currencies:
-        currencies[0].click()
-    else:
-        raise AssertionError("Список валют пуст")
-
-    time.sleep(1)
-
-    updated_currency = [product.find_element(By.CSS_SELECTOR, ".price-new").text
-                        for product in browser.find_elements(By.CSS_SELECTOR, ".product-thumb")]
-
-    assert initial_currency != updated_currency[0], f'Изменение валюты не применилось'
+    assert initial_currency != updated_currency, f'Изменение валюты не применилось'
 
 
+def test_add_new_product(browser):
+    page_admin = PageAdmin(browser)
+    page_admin.open(browser.url + "/administration")
+    page_admin.login_admin_page()
+    page_admin.navigate_to_products()
+    page_admin.add_new_product(
+        "Test Product", "Test Meta Tag", "Test Model", "test-keyword"
+    )
+    assert page_admin.is_success_message_displayed(), f"Товар не был добавлен"
+
+
+def test_delete_product(browser):
+    page_admin = PageAdmin(browser)
+    page_admin.open(browser.url + "/administration")
+    page_admin.login_admin_page()
+    page_admin.navigate_to_products()
+    page_admin.delete_product()
+    assert page_admin.is_success_message_displayed(), "Товар не был удален"
+
+
+def test_register_new_user(browser):
+    page_reg = PageRegistration(browser)
+    page_reg.open(browser.url)
+    page_reg.navigate_to_register()
+    page_reg.register_user("Test", "User", "test.user@ehxample.com", "password")
+    assert page_reg.is_registration_successful(), "Регистрация не удалась"
+
+
+def test_switch_currency(browser):
+    header = Header(browser)
+    header.open(browser.url)
+    header.switch_currency()
+    page_main = PageMain(browser)
+    assert "€" in page_main.get_current_currency()[-1], "Валюта не была изменена"

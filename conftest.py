@@ -1,15 +1,10 @@
-import random
-
 import pytest
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options as FFOptions
 from selenium.webdriver.safari.options import Options as SFOptions
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 
 def pytest_addoption(parser):
@@ -55,29 +50,3 @@ def browser(request):
     driver.url = url
     
     return driver
-
-
-@pytest.fixture()
-def login(browser):
-    username = 'user'
-    password = 'bitnami'
-
-    browser.get(browser.url + '/administration')
-    username_input = browser.find_element(By.CSS_SELECTOR, "#input-username")
-    password_input = browser.find_element(By.CSS_SELECTOR, "#input-password")
-    submit_button = browser.find_element(By.CSS_SELECTOR, "button[type='submit']")
-
-    username_input.send_keys(username)
-    password_input.send_keys(password)
-    submit_button.click()
-
-    WebDriverWait(browser, 2).until(EC.title_contains("Dashboard"))
-
-    yield browser
-
-
-@pytest.fixture()
-def get_current_currency(browser):
-    prices = [product.find_element(By.CSS_SELECTOR, ".price-new").text
-              for product in browser.find_elements(By.CSS_SELECTOR, ".product-thumb")]
-    return prices[0] if prices else None
