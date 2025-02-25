@@ -1,3 +1,5 @@
+import time
+
 from pages.admin_page import PageAdmin
 from pages.catalog_page import PageCatalog
 from pages.main_page import PageMain
@@ -10,10 +12,11 @@ def test_login_succeed_and_logout(browser, ):
     page_admin = PageAdmin(browser)
     page_admin.open(browser.url + "/administration")
     page_admin.login_admin_page()
-
     page_admin.wait_for_title()
 
-    assert "Dashboard" in browser.title, "Пользователь не залогинен"
+    assert "Dashboard" in browser.title, "Редирект на страницу дашборда не выполнен"
+    assert page_admin.logout_button_is_displayed(), "Кнопка логаута на странице не обнаружена"
+    assert page_admin.name_is_displayed(), "Имя пользователя не выводится"
 
     page_admin.logout()
     page_admin.wait_for_title(title_text="Administration")
@@ -30,7 +33,7 @@ def test_add_item(browser):
     page_shopping_cart.open(browser.url + '/en-gb?route=checkout/cart')
     shopping_cart = page_shopping_cart.get_shopping_cart_items()
 
-    assert len(shopping_cart) == 1, f'Товар не был добавлен в корзину'
+    assert len(shopping_cart) == 1, 'Товар не был добавлен в корзину'
 
 
 def test_currency_change_main_page(browser):
@@ -43,7 +46,7 @@ def test_currency_change_main_page(browser):
     header.select_currency(0)
     updated_currency = page_main.get_current_currency()
 
-    assert initial_currency != updated_currency, f'Изменение валюты не применилось'
+    assert initial_currency != updated_currency, 'Изменение валюты не применилось'
 
 
 def test_currency_change_catalog(browser):
@@ -56,7 +59,7 @@ def test_currency_change_catalog(browser):
     header.select_currency()
     updated_currency = page_catalog.get_current_currency()
 
-    assert initial_currency != updated_currency, f'Изменение валюты не применилось'
+    assert initial_currency != updated_currency, 'Изменение валюты не применилось'
 
 
 def test_add_new_product(browser):
@@ -64,10 +67,18 @@ def test_add_new_product(browser):
     page_admin.open(browser.url + "/administration")
     page_admin.login_admin_page()
     page_admin.navigate_to_products()
+    initial_products_count = page_admin.get_products_count()
+    print(initial_products_count)
     page_admin.add_new_product(
-        "Test Product", "Test Meta Tag", "Test Model", "test-keyword"
+        "Test Product", "Test Meta Tag", "Test Model", "test-keyword0---002"
     )
-    assert page_admin.is_success_message_displayed(), f"Товар не был добавлен"
+
+    assert page_admin.is_success_message_displayed(), "Сообщение о добавлении товара отображено на странице"
+
+    page_admin.navigate_to_products()
+    updated_products_count = page_admin.get_products_count()
+
+    assert initial_products_count < updated_products_count, "Товар не был добавлен"
 
 
 def test_delete_product(browser):

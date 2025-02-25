@@ -28,6 +28,7 @@ class PageAdmin(BasePage):
     CHECKBOX_PRODUCT = (By.CSS_SELECTOR, "input[type='checkbox'][name='selected[]']")
     DELETE_BUTTON = (By.CSS_SELECTOR, ".btn.btn-danger")
     CONFIRM_DELETE = (By.CSS_SELECTOR, ".btn-danger")
+    PRODUCTS_COUNTER = (By.CSS_SELECTOR, ".col-sm-6.text-end")
 
     def input_username(self):
         self.browser.find_element(*self.INPUT_USERNAME).clear()
@@ -39,6 +40,13 @@ class PageAdmin(BasePage):
 
     def submit_login(self):
         self.browser.find_element(*self.SUBMIT_BUTTON).click()
+
+    def name_is_displayed(self):
+        return self.browser.find_element(By.CSS_SELECTOR, "[alt = 'John Doe']").is_displayed()
+
+    def logout_button_is_displayed(self):
+        return WebDriverWait(self.browser, 2).until(
+            EC.element_to_be_clickable(self.LOGOUT_BUTTON))
 
     def logout(self):
         self.browser.find_element(*self.LOGOUT_BUTTON).click()
@@ -92,6 +100,13 @@ class PageAdmin(BasePage):
         WebDriverWait(self.browser, 2).until(
             EC.visibility_of_element_located(self.SAVE_BUTTON)
         ).click()
+
+    def get_products_count(self):
+        products_count_text = WebDriverWait(self.browser, 2).until(
+            EC.visibility_of_element_located(self.PRODUCTS_COUNTER)
+        ).text
+        text_split = products_count_text.split("of")[1].split("(")[0].strip()
+        return int(text_split)
 
     def is_success_message_displayed(self):
         return WebDriverWait(self.browser, 2).until(
