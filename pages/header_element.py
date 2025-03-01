@@ -10,9 +10,11 @@ class Header(BasePage):
     CURRENCY_OPTIONS = (By.CSS_SELECTOR, ".dropdown-menu.show .dropdown-item")
 
     def open_currency_dropdown(self):
+        self.logger.debug(f"{self.class_name}: Oppening currency dropdown")
         WebDriverWait(self.browser, 2).until(EC.element_to_be_clickable(self.CURRENCY_DROPDOWN)).click()
 
     def select_currency(self, index=0):
+        self.logger.info(f"{self.class_name}: Selecting currency")
         currencies = self.browser.find_elements(*self.CURRENCY_OPTIONS)
         if currencies:
             currencies[index].click()
@@ -20,5 +22,6 @@ class Header(BasePage):
             raise AssertionError("Список валют пуст")
 
     def switch_currency(self):
+        self.logger.info(f"{self.class_name}: Switching currency")
         self.open_currency_dropdown()
         self.select_currency()

@@ -1,3 +1,6 @@
+import os
+import logging
+import datetime
 import pytest
 
 from selenium import webdriver
@@ -11,6 +14,7 @@ def pytest_addoption(parser):
     parser.addoption("--browser", default="Chrome")
     parser.addoption("--headless", action="store_true")
     parser.addoption("--url", default="http://192.168.0.23:8081")
+    parser.addoption("--log_level", action="store", default="INFO")
 
 
 @pytest.fixture()
@@ -18,6 +22,19 @@ def browser(request):
     browser_name = request.config.getoption("browser")
     headless = request.config.getoption("headless")
     url = request.config.getoption("url")
+    log_level = request.config.getoption("--log_level")
+
+    logs_dir = "logs"
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
+
+    logger = logging.getLogger(request.node.name)
+    file_handler = logging.FileHandler(f"{logs_dir}/{request.node.name}.log")
+    file_handler.setFormatter(logging.Formatter('%(levelname)s %(message)s'))
+    logger.addHandler(file_handler)
+    logger.setLevel(level=log_level)
+
+    logger.info("===> Test started at %s" % datetime.datetime.now())
 
     if browser_name in ["Chrome", "ch"]:
         options = ChromeOptions()
@@ -44,9 +61,18 @@ def browser(request):
 
     driver.maximize_window()
 
-    request.addfinalizer(driver.close)
-
     driver.get(url)
     driver.url = url
-    
+
+    driver.log_level = log_level
+    driver.logger = logger
+    driver.test_name = request.node.name
+
+    logger.info("Browser %s started" % browser_name)
+
+    def end():
+        driver.quit()
+        logger.info("===> Test finished at %s" % datetime.datetime.now())
+
+    request.addfinalizer(end)
     return driver

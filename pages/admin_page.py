@@ -31,35 +31,44 @@ class PageAdmin(BasePage):
     PRODUCTS_COUNTER = (By.CSS_SELECTOR, ".col-sm-6.text-end")
 
     def input_username(self):
+        self.logger.info(f"{self.class_name}: Filling in username input")
         self.browser.find_element(*self.INPUT_USERNAME).clear()
         self.browser.find_element(*self.INPUT_USERNAME).send_keys(self.USERNAME)
 
     def input_password(self):
+        self.logger.info(f"{self.class_name}: Filling in password")
         self.browser.find_element(*self.INPUT_PASSWORD).clear()
         self.browser.find_element(*self.INPUT_PASSWORD).send_keys(self.PASSWORD)
 
     def submit_login(self):
+        self.logger.debug(f"{self.class_name}: Clicking 'SUBMIT_BUTTON'")
         self.browser.find_element(*self.SUBMIT_BUTTON).click()
 
     def name_is_displayed(self):
+        self.logger.debug(f"{self.class_name}: Checking name displaying")
         return self.browser.find_element(By.CSS_SELECTOR, "[alt = 'John Doe']").is_displayed()
 
     def logout_button_is_displayed(self):
+        self.logger.debug(f"{self.class_name}: Checking 'LOGOUT_BUTTON' displaying")
         return WebDriverWait(self.browser, 2).until(
             EC.element_to_be_clickable(self.LOGOUT_BUTTON))
 
     def logout(self):
+        self.logger.info(f"{self.class_name}: Logging out")
         self.browser.find_element(*self.LOGOUT_BUTTON).click()
 
     def login_admin_page(self):
+        self.logger.info(f"{self.class_name}: Logging admin page")
         self.input_username()
         self.input_password()
         self.submit_login()
 
     def wait_for_title(self, timeout=2, title_text="Dashboard"):
+        self.logger.debug(f"{self.class_name}: Waiting for title {title_text}")
         WebDriverWait(self.browser, timeout).until(EC.title_contains(title_text))
 
     def navigate_to_products(self):
+        self.logger.info(f"{self.class_name}: Going to products page")
         catalog_menu = WebDriverWait(self.browser, 2).until(
             EC.visibility_of_element_located(self.CATALOG_MENU))
         catalog_menu.click()
@@ -68,11 +77,13 @@ class PageAdmin(BasePage):
         product_menu.click()
 
     def switch_to_tab(self, tab_name):
+        self.logger.debug(f"{self.class_name}: Switching to tab")
         data_tab = WebDriverWait(self.browser, 2).until(
             EC.element_to_be_clickable(tab_name))
         data_tab.click()
 
     def add_new_product(self, product_name, meta_tag, model_name, keyword_name):
+        self.logger.info(f"{self.class_name}: Adding new product")
         WebDriverWait(self.browser, 2).until(
             EC.visibility_of_element_located(self.ADD_NEW_BUTTON)
         ).click()
@@ -102,6 +113,7 @@ class PageAdmin(BasePage):
         ).click()
 
     def get_products_count(self):
+        self.logger.debug(f"{self.class_name}: Counting products")
         products_count_text = WebDriverWait(self.browser, 2).until(
             EC.visibility_of_element_located(self.PRODUCTS_COUNTER)
         ).text
@@ -109,11 +121,13 @@ class PageAdmin(BasePage):
         return int(text_split)
 
     def is_success_message_displayed(self):
+        self.logger.debug(f"{self.class_name}: Checking success message displaying")
         return WebDriverWait(self.browser, 2).until(
             EC.visibility_of_element_located(self.SUCCESS_ALERT)
         ).is_displayed()
 
     def delete_product(self):
+        self.logger.info(f"{self.class_name}: Deleting product")
         self.browser.find_element(*self.CHECKBOX_PRODUCT).click()
         self.browser.find_element(*self.DELETE_BUTTON).click()
         Alert(self.browser).accept()

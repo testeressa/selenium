@@ -11,5 +11,6 @@ class PageMain(BasePage):
     ACTUAL_PRICE = (By.CSS_SELECTOR, ".price-new")
 
     def get_current_currency(self):
+        self.logger.info(f"{self.class_name}: Getting current currency")
         return [product.find_element(*self.ACTUAL_PRICE).text
                 for product in self.browser.find_elements(*PageCatalog.ITEM)]

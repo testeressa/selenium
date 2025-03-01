@@ -68,9 +68,8 @@ def test_add_new_product(browser):
     page_admin.login_admin_page()
     page_admin.navigate_to_products()
     initial_products_count = page_admin.get_products_count()
-    print(initial_products_count)
     page_admin.add_new_product(
-        "Test Product", "Test Meta Tag", "Test Model", "test-keyword0---002"
+        "Test Product", "Test Meta Tag", "Test Model", "test-keyword00---002"
     )
 
     assert page_admin.is_success_message_displayed(), "Сообщение о добавлении товара отображено на странице"
@@ -94,7 +93,7 @@ def test_register_new_user(browser):
     page_reg = PageRegistration(browser)
     page_reg.open(browser.url)
     page_reg.navigate_to_register()
-    page_reg.register_user("Test", "User", "test.user@ehxample.com", "password")
+    page_reg.register_user("Test1", "User1", "test1.user1@example.com", "password1")
     assert page_reg.is_registration_successful(), "Регистрация не удалась"
 
 
