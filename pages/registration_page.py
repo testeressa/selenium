@@ -1,5 +1,6 @@
 import time
 
+import allure
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -33,6 +34,7 @@ class PageRegistration(BasePage):
         WebDriverWait(self.browser, 4).until(EC.element_to_be_clickable(self.AGREEMENT_TOGGLE)).click()
         WebDriverWait(self.browser, 2).until(EC.element_to_be_clickable(self.CONTINUE_BUTTON)).click()
 
+    @allure.step('Checking success of user registration')
     def is_registration_successful(self):
         self.logger.info(f"{self.class_name}: Checking success of user registration")
         return self.browser.title == "Your Account Has Been Created!"

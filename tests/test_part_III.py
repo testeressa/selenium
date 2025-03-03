@@ -1,4 +1,4 @@
-import time
+import allure
 
 from pages.admin_page import PageAdmin
 from pages.catalog_page import PageCatalog
@@ -8,6 +8,7 @@ from pages.registration_page import PageRegistration
 from pages.shopping_cart_page import PageShoppingCart
 
 
+@allure.title("Проврека логина, разлогина в админке")
 def test_login_succeed_and_logout(browser, ):
     page_admin = PageAdmin(browser)
     page_admin.open(browser.url + "/administration")
@@ -24,6 +25,7 @@ def test_login_succeed_and_logout(browser, ):
     assert "Administration" in browser.title, "Пользователь не разлогинен"
 
 
+@allure.title("Проврека добавления товара в корзину")
 def test_add_item(browser):
     page_shopping_cart = PageShoppingCart(browser)
     page_shopping_cart.open(browser.url + "/home")
@@ -36,6 +38,7 @@ def test_add_item(browser):
     assert len(shopping_cart) == 1, 'Товар не был добавлен в корзину'
 
 
+@allure.title("Проврека изменения валюты на главной странице")
 def test_currency_change_main_page(browser):
     page_main = PageMain(browser)
     page_main.open(browser.url + "/home")
@@ -49,6 +52,7 @@ def test_currency_change_main_page(browser):
     assert initial_currency != updated_currency, 'Изменение валюты не применилось'
 
 
+@allure.title("Проврека изменения валюты в каталоге")
 def test_currency_change_catalog(browser):
     page_catalog = PageCatalog(browser)
     page_catalog.open(browser.url + "/catalog/desktops")
@@ -62,6 +66,7 @@ def test_currency_change_catalog(browser):
     assert initial_currency != updated_currency, 'Изменение валюты не применилось'
 
 
+@allure.title("Проврека добавления товара в админке")
 def test_add_new_product(browser):
     page_admin = PageAdmin(browser)
     page_admin.open(browser.url + "/administration")
@@ -80,6 +85,7 @@ def test_add_new_product(browser):
     assert initial_products_count < updated_products_count, "Товар не был добавлен"
 
 
+@allure.title("Проврека удаления товара в админке")
 def test_delete_product(browser):
     page_admin = PageAdmin(browser)
     page_admin.open(browser.url + "/administration")
@@ -89,6 +95,7 @@ def test_delete_product(browser):
     assert page_admin.is_success_message_displayed(), "Товар не был удален"
 
 
+@allure.title("Проврека регистрации нового пользователя")
 def test_register_new_user(browser):
     page_reg = PageRegistration(browser)
     page_reg.open(browser.url)
@@ -97,6 +104,7 @@ def test_register_new_user(browser):
     assert page_reg.is_registration_successful(), "Регистрация не удалась"
 
 
+@allure.title("Проврека переключения между валютами")
 def test_switch_currency(browser):
     header = Header(browser)
     header.open(browser.url)

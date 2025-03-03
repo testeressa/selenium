@@ -1,3 +1,4 @@
+import allure
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.support import expected_conditions as EC
@@ -30,43 +31,52 @@ class PageAdmin(BasePage):
     CONFIRM_DELETE = (By.CSS_SELECTOR, ".btn-danger")
     PRODUCTS_COUNTER = (By.CSS_SELECTOR, ".col-sm-6.text-end")
 
+    @allure.step('Filling in username input')
     def input_username(self):
         self.logger.info(f"{self.class_name}: Filling in username input")
         self.browser.find_element(*self.INPUT_USERNAME).clear()
         self.browser.find_element(*self.INPUT_USERNAME).send_keys(self.USERNAME)
 
+    @allure.step('Filling in password')
     def input_password(self):
         self.logger.info(f"{self.class_name}: Filling in password")
         self.browser.find_element(*self.INPUT_PASSWORD).clear()
         self.browser.find_element(*self.INPUT_PASSWORD).send_keys(self.PASSWORD)
 
+    @allure.step('Clicking SUBMIT_BUTTON')
     def submit_login(self):
         self.logger.debug(f"{self.class_name}: Clicking 'SUBMIT_BUTTON'")
         self.browser.find_element(*self.SUBMIT_BUTTON).click()
 
+    @allure.step('Checking name displaying')
     def name_is_displayed(self):
         self.logger.debug(f"{self.class_name}: Checking name displaying")
         return self.browser.find_element(By.CSS_SELECTOR, "[alt = 'John Doe']").is_displayed()
 
+    @allure.step('Checking LOGOUT_BUTTON displaying')
     def logout_button_is_displayed(self):
         self.logger.debug(f"{self.class_name}: Checking 'LOGOUT_BUTTON' displaying")
         return WebDriverWait(self.browser, 2).until(
             EC.element_to_be_clickable(self.LOGOUT_BUTTON))
 
+    @allure.step('Logging out')
     def logout(self):
         self.logger.info(f"{self.class_name}: Logging out")
         self.browser.find_element(*self.LOGOUT_BUTTON).click()
 
+    @allure.step('Logging admin page')
     def login_admin_page(self):
         self.logger.info(f"{self.class_name}: Logging admin page")
         self.input_username()
         self.input_password()
         self.submit_login()
 
+    @allure.step('Waiting for title displayed')
     def wait_for_title(self, timeout=2, title_text="Dashboard"):
         self.logger.debug(f"{self.class_name}: Waiting for title {title_text}")
         WebDriverWait(self.browser, timeout).until(EC.title_contains(title_text))
 
+    @allure.step('Going to products page')
     def navigate_to_products(self):
         self.logger.info(f"{self.class_name}: Going to products page")
         catalog_menu = WebDriverWait(self.browser, 2).until(
@@ -76,12 +86,14 @@ class PageAdmin(BasePage):
             EC.visibility_of_element_located(self.PRODUCTS_LINK))
         product_menu.click()
 
+    @allure.step('Switching tabs')
     def switch_to_tab(self, tab_name):
-        self.logger.debug(f"{self.class_name}: Switching to tab")
+        self.logger.debug(f"{self.class_name}: Switching tabs")
         data_tab = WebDriverWait(self.browser, 2).until(
             EC.element_to_be_clickable(tab_name))
         data_tab.click()
 
+    @allure.step('Adding new product')
     def add_new_product(self, product_name, meta_tag, model_name, keyword_name):
         self.logger.info(f"{self.class_name}: Adding new product")
         WebDriverWait(self.browser, 2).until(
@@ -112,6 +124,7 @@ class PageAdmin(BasePage):
             EC.visibility_of_element_located(self.SAVE_BUTTON)
         ).click()
 
+    @allure.step('Counting products')
     def get_products_count(self):
         self.logger.debug(f"{self.class_name}: Counting products")
         products_count_text = WebDriverWait(self.browser, 2).until(
@@ -120,12 +133,14 @@ class PageAdmin(BasePage):
         text_split = products_count_text.split("of")[1].split("(")[0].strip()
         return int(text_split)
 
+    @allure.step('Checking success message displaying')
     def is_success_message_displayed(self):
         self.logger.debug(f"{self.class_name}: Checking success message displaying")
         return WebDriverWait(self.browser, 2).until(
             EC.visibility_of_element_located(self.SUCCESS_ALERT)
         ).is_displayed()
 
+    @allure.step('Deleting product')
     def delete_product(self):
         self.logger.info(f"{self.class_name}: Deleting product")
         self.browser.find_element(*self.CHECKBOX_PRODUCT).click()

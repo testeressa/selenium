@@ -1,5 +1,6 @@
 import os
 import logging
+import allure
 import datetime
 import pytest
 
@@ -15,6 +16,13 @@ def pytest_addoption(parser):
     parser.addoption("--headless", action="store_true")
     parser.addoption("--url", default="http://192.168.0.23:8081")
     parser.addoption("--log_level", action="store", default="INFO")
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    rep = outcome.get_result()
+    setattr(item, "rep_" + rep.when, rep)
 
 
 @pytest.fixture()
@@ -75,4 +83,17 @@ def browser(request):
         logger.info("===> Test finished at %s" % datetime.datetime.now())
 
     request.addfinalizer(end)
-    return driver
+
+    yield driver
+
+    if request.node.rep_call.failed:
+        allure.attach(
+            name="failure_screenshot",
+            body=driver.get_screenshot_as_png(),
+            attachment_type=allure.attachment_type.PNG
+        )
+        allure.attach(
+            name="page_source",
+            body=driver.page_source,
+            attachment_type=allure.attachment_type.HTML
+        )
