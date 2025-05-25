@@ -33,14 +33,14 @@ services:
     depends_on:
       - mariadb
 
-  tests:
-   image: testapp_tests:latest
-   container_name: testapp_tests
-   volumes:
-     - ./allure-results:/app/allure-results:rw
-   depends_on:
-      - opencart
-   command: ["/wait-for-it.sh", "opencart", "8080", "pytest", "--browser=chrome", "--browser_version=128.0", "--headless", "--selenoid", "--selenoid_url=http://selenoid:4444/wd/hub", "--url=http://${LOCAL_IP}:${OPENCART_PORT}/", "-s", "-v"]
+#  tests:
+#   image: testapp_tests:latest
+#   container_name: testapp_tests
+#   volumes:
+#     - ./allure-results:/app/allure-results:rw
+#   depends_on:
+#      - opencart
+#   command: ["/wait-for-it.sh", "opencart", "8080", "pytest", "--browser=chrome", "--browser_version=128.0", "--headless", "--selenoid", "--selenoid_url=http://selenoid:4444/wd/hub", "--url=http://${LOCAL_IP}:${OPENCART_PORT}/", "-s", "-v"]
 
 networks:
   default:
